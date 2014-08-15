@@ -1,0 +1,127 @@
+<!DOCTYPE html> 
+<html> 
+	<head>
+		<title>html5playerwithomnituresupport</title>
+	</head>
+	
+	<body> 
+
+		<script type="text/javascript">
+		
+		//Indicates is video has been started or not
+		videoplaying = false;
+		
+		//Used to run code once event is fired
+		function myHandler(e){
+		
+			var currentTime;
+			//get the video
+			var vid = document.getElementById('videoasset');
+			
+			if(vid.currentTime > 0){
+				currentTime = vid.currentTime;
+			}else{
+				currentTime = 0;
+			}
+			
+			//EVENT loadedmetadata
+			if(e.type == "loadedmetadata"){
+				//don't do anything at this time
+
+			}
+			
+			//EVENT seeking
+			if(e.type == "seeking" && videoplaying){
+			
+			}
+			
+			//EVENT play
+			if(e.type == "play" && videoplaying){
+			
+				s.Media.play("testhtml5video",currentTime);
+			}
+			
+			//EVENT play
+			if(e.type == "play" && !videoplaying){
+				videoplaying = true;
+				s.Media.open("testhtml5video",vid.duration,"Test");
+				s.Media.play("testhtml5video",currentTime);
+			}
+			
+			//EVENT seeked
+			if(e.type == "seeked" && videoplaying){
+				s.Media.play("testhtml5video",currentTime);
+			}
+			
+			//EVENT pause
+			if(e.type == "pause" && videoplaying){
+				s.Media.stop("testhtml5video",currentTime);
+			}
+			
+			//EVENT ENEDED
+			if(e.type == "ended" && videoplaying){
+				videoplaying = false;
+				s.Media.close("testhtml5video");
+			}
+		}
+		</script>
+		
+		<!--Create the video-->
+		<video id="videoasset" controls preload='none' height="390" width="640">
+			<source id='ogv'
+			src="ELILIBSON__MODEL_TEXTURE_REEL.ogv"
+			type='video/ogg' >
+			<p>Your user agent does not support the HTML5 Video element.</p>
+		</video>
+
+	
+		<script>
+			myvid = document.getElementById("videoasset");
+			myvid.addEventListener('loadedmetadata',myHandler,false);
+			myvid.addEventListener('seeked',myHandler,false);
+			myvid.addEventListener('seeking',myHandler,false);
+			myvid.addEventListener('play',myHandler,false);
+			myvid.addEventListener('pause',myHandler,false);
+			myvid.addEventListener('ended',myHandler,false);
+
+			if(myvid.error){
+				switch(myvid.error.code){
+					case MEDIA_ERR_ABORTED:
+						alert("Video stopped before load");
+						break;
+					case MEDIA_ERR_NETWORK:
+						alert("Network Error");
+						break;
+					case MEDIA_ERR_DECODE:
+						alert("Video is broken");
+						break;
+					case MEDIA_ERR_SRC_NOT_SUPPORTED:
+						alert("Codec is unsupported by this browser");
+					break;
+				}
+			}
+		</script>
+
+		
+
+
+<script language="JavaScript" type="text/javascript" src="s_code.js"></script>
+<script language="JavaScript" type="text/javascript"><!--
+
+s.pageName="TEST HTML 5 VIDEO"
+
+/************* DO NOT ALTER ANYTHING BELOW THIS LINE ! **************/
+var s_code=s.t();if(s_code)document.write(s_code)//--></script>
+<script language="JavaScript" type="text/javascript"><!--
+if(navigator.appVersion.indexOf('MSIE')>=0)document.write(unescape('%3C')+'\!-'+'-')
+//--></script>
+
+
+</body> 
+</html>
+
+
+
+
+     
+
