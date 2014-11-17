@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8"> 
+		<title>Yourtube iframe and Adobe Analytics</title>
+		<style>
+			.details {
+			color : green;
+			}
+		</style>
+		
+	</head>
+	<body>
+    <!-- 1. The <iframe> (and video player) will replace this <div> tag. -->
+    <div id="player1"></div>
+	<div id="player2"></div>
+
+    <script>
+		// 2. This code loads the IFrame Player API code asynchronously.
+		var tag = document.createElement('script');
+
+		tag.src = "https://www.youtube.com/iframe_api";
+		var firstScriptTag = document.getElementsByTagName('script')[0];
+		firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+		// 3. This function creates an <iframe> (and YouTube player)
+		//    after the API code downloads.
+		
+		//This 2 variables will be used later on the code to get specific variables values just for the specific video.
+		var player1;
+		var player2;
+		
+		//Create the 2 videos
+		function onYouTubeIframeAPIReady() {
+			player1 = new YT.Player('player1', {
+				height: '390',
+				width: '640',
+				videoId: 'ZZ81_Q0lYAM',
+				//done is used to know if he video is completed or not -- NOT DEFAULT YOUTUBE API  VARIABLE
+				done: false,
+				events: {
+					'onReady': onPlayerReady,
+					'onStateChange': onPlayerStateChange,
+					'onError' : onPlayerError
+				}
+			});
+			player2 = new YT.Player('player2', {
+				height: '390',
+				width: '640',
+				videoId: 'ZSt9tm3RoUU',
+				//done is used to know if he video is completed or not -- NOT DEFAULT YOUTUBE API  VARIABLE
+				done: false,
+				events: {
+					'onReady': onPlayerReady,
+					'onStateChange': onPlayerStateChange,
+					'onError' : onPlayerError
+				}
+				
+			});
+		
+		}
+	  
+	  /*---------------------------------------------------------------------------------------*/
+	  /* END creating youtube iframe player */
+	  /*---------------------------------------------------------------------------------------*/
+
+		// 4. The API will call this function when the video player is ready.
+		function onPlayerReady(event) {
+			
+			// This causes the updatePlayerInfo function to be called every 250ms to
+			// get fresh data from the player
+			if(event.target.d.id == "player1"){
+				setInterval(updatePlayerInfo, 250);
+				updatePlayerInfo();
+			}
+			
+			if(event.target.d.id == "player2"){
+				setInterval(updatePlayerInfo2, 250);
+				updatePlayerInfo2();
+			}
+		}
+	  
+		/*
+		* Polling the player for information
+		*/
+      
+		// Update a particular HTML element with a new value
+		function updateHTML(elmId, value) {
+			document.getElementById(elmId).innerHTML = value;
+		}
+      
+		// This function is called when an error is thrown by the player
+		function onPlayerError(errorCode) {
+			alert("An error occured of type:" + errorCode);
+		}
+      
+     
+
+		// 5. The API calls this function when the player's state changes.
+		//    The function indicates that when playing a video (state=1),
+		//    the player should play for six seconds and then stop.
+		
+		//Boolean to check if video has started
+		//var done = false;
+		function onPlayerStateChange(event) {
+			//player variable will be assigned to which player had a state change
+			var player;
+			//status variable will be used to know which status youtube player information to update
+			var status;
+			
+			//Identify which player sent the event
+			if(event.target.d.id == "player1"){
+				player=player1;
+				status = "playerState";
+			}
+			
+			if(event.target.d.id == "player2"){
+				player=player2;
+				status = "playerState2";
+			}
+			//full duration of video
+			var duration = player.getDuration();
+			//current time of video
+			var currentTime = player.getCurrentTime();
+			
+			//update status of player
+			updateHTML(status, youtubePlayerState(event.data));
+			
+			//Start of the video
+			if (event.data == YT.PlayerState.PLAYING && !player.done && event.data == 1) {
+				console.log("Youtube start : " + youtubePlayerState(event.data) + " Youtube ID : " + event.target.d.id)
+				//Adobe Analytics video code
+				s.Media.open(player.getVideoUrl(),duration,"TestYoutubeVideo");
+				//END of Adobe Analytics video code
+				//Video started
+				player.done=true;
+			}
+			
+			//Play of video but not start of video
+			if (event.data == YT.PlayerState.PLAYING && player.done && event.data == 1) {
+				console.log("Youtube play : " + youtubePlayerState(event.data) + " Youtube ID : " + event.target.d.id)
+				//Adobe Analytics video code
+				s.Media.play(player.getVideoUrl(),currentTime);
+				//END of Adobe Analytics video code
+			}
+		
+			if (event.data == YT.PlayerState.PAUSED && player.done && event.data == 2) {
+				console.log("Youtube pause: " + youtubePlayerState(event.data) + " Youtube ID : " + event.target.d.id)
+				//Adobe Analytics video code
+				s.Media.stop(player.getVideoUrl(),currentTime);
+				//END of Adobe Analytics video code
+			}
+		
+			if (event.data == YT.PlayerState.ENDED) {
+				console.log("Youtube completed: " + youtubePlayerState(event.data) + " Youtube ID : " + event.target.d.id)
+				//Adobe Analytics video code
+				//s.Media.stop(player.getVideoUrl(),currentTime);
+				s.Media.close(player.getVideoUrl());
+				//END of Adobe Analytics video code
+				//Video ended
+				player.done = false;
+			}
+		}
+		
+		//Map player state code to value
+		function youtubePlayerState(eventID){
+			var state="";
+			switch(eventID){
+				case -1 : state="unstarted";
+						  return state;
+				case 0 : state="ended";
+						  return state;
+				case 1 : state="playing";
+						  return state;
+				case 2 : state="paused";
+						  return state;
+				case 3 : state="buffering";
+						  return state;
+				case 5 : state="video cued";
+						  return state;	
+				default : state="unknown";
+						  return state;			  
+			}
+		
+		}
+	  
+		// Display information about the current state of the player1
+		function updatePlayerInfo() {
+			
+			if(player1 && player1.getDuration) {
+				updateHTML("videoDuration", player1.getDuration());
+				updateHTML("videoCurrentTime", player1.getCurrentTime());
+				updateHTML("bytesTotal", player1.getVideoBytesTotal());
+				updateHTML("startBytes", player1.getVideoStartBytes());
+				updateHTML("bytesLoaded", player1.getVideoBytesLoaded());
+				updateHTML("percentageLoaded", player1.getCurrentTime()/player1.getDuration());
+				updateHTML("videoURL", player1.getVideoUrl());
+			}
+		}
+		
+		// Display information about the current state of the player2
+		function updatePlayerInfo2() {
+			
+			if(player2 && player2.getDuration) {
+				updateHTML("videoDuration2", player2.getDuration());
+				updateHTML("videoCurrentTime2", player2.getCurrentTime());
+				updateHTML("bytesTotal2", player2.getVideoBytesTotal());
+				updateHTML("startBytes2", player2.getVideoStartBytes());
+				updateHTML("bytesLoaded2", player2.getVideoBytesLoaded());
+				updateHTML("percentageLoaded2", player2.getCurrentTime()/player2.getDuration());
+				updateHTML("videoURL2", player2.getVideoUrl());
+			}
+		}
+	  	  
+    </script>
+  
+	<hr>
+  
+	<p>player.getPlayerState():Number Returns the state of the player. Possible values are:
+	<ul>
+		<li>-1 – unstarted</li>
+        <li>0 – ended</li>
+        <li>1 – playing</li>
+        <li>2 – paused</li>
+        <li>3 – buffering</li>
+        <li>5 – video cued</li>
+	</ul>
+		
+	</p>
+	
+	<hr>
+	
+	<div style="background:#FFFCD1">
+		<h1>Youtube player information</h1>
+	
+		<table>
+			<tr>
+				<td valign="top">
+					<div id="videoInfo">
+						<p><b>Player state :</b> <span id="playerState" class="details">--</span></p>
+						<p><b>Current Time :</b> <span id="videoCurrentTime" class="details">--:--</span> <b>| Duration :</b> <span id="videoDuration" class="details">--:--</span></p>
+						<p><b>Bytes Total:</b> <span id="bytesTotal" class="details">--</span> <b>| Start Bytes :</b> <span id="startBytes" class="details">--</span> <b>| Bytes Loaded : </b> <span id="bytesLoaded" class="details">--</span></p>
+						<p><b>Percentage of Video loaded :</b> <span id="percentageLoaded" class="details">--</span></p>
+						<p><b>Video URL :</b> <span id="videoURL" class="details">--</span></p>
+					</div>
+				</td>
+			</tr>
+		</table>
+	<div>
+	
+	<div style="background:#B2CCF7">
+		<h1>Youtube player information 2</h1>
+	
+		<table>
+			<tr>
+				<td valign="top">
+					<div id="videoInfo2">
+						<p><b>Player state :</b> <span id="playerState2" class="details">--</span></p>
+						<p><b>Current Time :</b> <span id="videoCurrentTime2" class="details">--:--</span> <b>| Duration :</b> <span id="videoDuration2" class="details">--:--</span></p>
+						<p><b>Bytes Total:</b> <span id="bytesTotal2" class="details">--</span> <b>| Start Bytes :</b> <span id="startBytes2" class="details">--</span> <b>| Bytes Loaded : </b> <span id="bytesLoaded2" class="details">--</span></p>
+						<p><b>Percentage of Video loaded :</b> <span id="percentageLoaded2" class="details">--</span></p>
+						<p><b>Video URL :</b> <span id="videoURL2" class="details">--</span></p>
+					</div>
+				</td>
+			</tr>
+		</table>
+	<div>
+	
+	<!--Load the adobe analytics library-->
+	<script language="JavaScript" type="text/javascript" src="s_code.js"></script>		
+	<!--Set Adobe Analytics variables-->
+	<script language="JavaScript" type="text/javascript">
+		//s.visitorID="test123456";
+		s.pageName=document.title;
+		s.t();
+	</script>
+  
+	</body>
+  
+  
+</html>
