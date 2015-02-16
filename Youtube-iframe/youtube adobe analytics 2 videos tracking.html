@@ -2,7 +2,7 @@
 <html>
 	<head>
 		<meta charset="utf-8"> 
-		<title>Yourtube iframe and Adobe Analytics</title>
+		<title>Yourtube iframe and Adobe Analytics - 2 videos</title>
 		<style>
 			.details {
 			color : green;
@@ -131,6 +131,7 @@
 				console.log("Youtube start : " + youtubePlayerState(event.data) + " Youtube ID : " + event.target.d.id)
 				//Adobe Analytics video code
 				s.Media.open(player.getVideoUrl(),duration,"TestYoutubeVideo");
+				s.Media.play(player.getVideoUrl(),currentTime);
 				//END of Adobe Analytics video code
 				//Video started
 				player.done=true;
@@ -143,18 +144,20 @@
 				s.Media.play(player.getVideoUrl(),currentTime);
 				//END of Adobe Analytics video code
 			}
-		
+			
+			//Video paused
 			if (event.data == YT.PlayerState.PAUSED && player.done && event.data == 2) {
 				console.log("Youtube pause: " + youtubePlayerState(event.data) + " Youtube ID : " + event.target.d.id)
 				//Adobe Analytics video code
 				s.Media.stop(player.getVideoUrl(),currentTime);
 				//END of Adobe Analytics video code
 			}
-		
+			
+			//Video Completed
 			if (event.data == YT.PlayerState.ENDED) {
 				console.log("Youtube completed: " + youtubePlayerState(event.data) + " Youtube ID : " + event.target.d.id)
 				//Adobe Analytics video code
-				//s.Media.stop(player.getVideoUrl(),currentTime);
+				s.Media.stop(player.getVideoUrl(),currentTime);
 				s.Media.close(player.getVideoUrl());
 				//END of Adobe Analytics video code
 				//Video ended
