@@ -1,0 +1,28 @@
+<config>
+<account>edirocksvideo</account>
+<debugTracking>true</debugTracking>
+<visitorNamespace>cardgagecorp</visitorNamespace>
+<trackingServer>cardgagecorp.112.2o7.net</trackingServer>
+<Media>
+    <autoTrack>true</autoTrack>
+    <trackMilestones>25,50,75</trackMilestones>
+    <trackVars>events,eVar1,eVar2,eVar3,eVar4,eVar5,prop1</trackVars>
+    <trackEvents>event1,event2,event3,event4,event5,event6,event7</trackEvents>
+    <segmentByMilestones>true</segmentByMilestones>
+    <trackUsingContextData>true</trackUsingContextData>
+    <contextDataMapping>
+            <a.media.name>eVar1,prop1</a.media.name>
+            <a.media.segment>eVar2</a.media.segment>
+            <a.contentType>eVar3</a.contentType>
+            <a.media.timePlayed>event1</a.media.timePlayed>
+            <a.media.view>event2</a.media.view>
+            <a.media.segmentView>event4</a.media.segmentView>
+            <a.media.complete>event3</a.media.complete>
+            <a.media.milestones>
+                <item name="25">event5</item>
+                <item name="50">event6</item>
+                <item name="75">event7</item>
+            </a.media.milestones>
+    </contextDataMapping>
+</Media>
+</config>
