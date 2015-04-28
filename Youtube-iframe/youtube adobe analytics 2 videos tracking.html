@@ -69,12 +69,12 @@
 			
 			// This causes the updatePlayerInfo function to be called every 250ms to
 			// get fresh data from the player
-			if(event.target.d.id == "player1"){
+			if(event.target.c.id == "player1"){
 				setInterval(updatePlayerInfo, 250);
 				updatePlayerInfo();
 			}
 			
-			if(event.target.d.id == "player2"){
+			if(event.target.c.id == "player2"){
 				setInterval(updatePlayerInfo2, 250);
 				updatePlayerInfo2();
 			}
@@ -109,12 +109,12 @@
 			var status;
 			
 			//Identify which player sent the event
-			if(event.target.d.id == "player1"){
+			if(event.target.c.id == "player1"){
 				player=player1;
 				status = "playerState";
 			}
 			
-			if(event.target.d.id == "player2"){
+			if(event.target.c.id == "player2"){
 				player=player2;
 				status = "playerState2";
 			}
@@ -128,7 +128,7 @@
 			
 			//Start of the video
 			if (event.data == YT.PlayerState.PLAYING && !player.done && event.data == 1) {
-				console.log("Youtube start : " + youtubePlayerState(event.data) + " Youtube ID : " + event.target.d.id)
+				console.log("Youtube start : " + youtubePlayerState(event.data) + " Youtube ID : " + event.target.c.id)
 				//Adobe Analytics video code
 				s.Media.open(player.getVideoUrl(),duration,"TestYoutubeVideo");
 				s.Media.play(player.getVideoUrl(),currentTime);
@@ -139,7 +139,7 @@
 			
 			//Play of video but not start of video
 			if (event.data == YT.PlayerState.PLAYING && player.done && event.data == 1) {
-				console.log("Youtube play : " + youtubePlayerState(event.data) + " Youtube ID : " + event.target.d.id)
+				console.log("Youtube play : " + youtubePlayerState(event.data) + " Youtube ID : " + event.target.c.id)
 				//Adobe Analytics video code
 				s.Media.play(player.getVideoUrl(),currentTime);
 				//END of Adobe Analytics video code
@@ -147,7 +147,7 @@
 			
 			//Video paused
 			if (event.data == YT.PlayerState.PAUSED && player.done && event.data == 2) {
-				console.log("Youtube pause: " + youtubePlayerState(event.data) + " Youtube ID : " + event.target.d.id)
+				console.log("Youtube pause: " + youtubePlayerState(event.data) + " Youtube ID : " + event.target.c.id)
 				//Adobe Analytics video code
 				s.Media.stop(player.getVideoUrl(),currentTime);
 				//END of Adobe Analytics video code
@@ -155,7 +155,7 @@
 			
 			//Video Completed
 			if (event.data == YT.PlayerState.ENDED) {
-				console.log("Youtube completed: " + youtubePlayerState(event.data) + " Youtube ID : " + event.target.d.id)
+				console.log("Youtube completed: " + youtubePlayerState(event.data) + " Youtube ID : " + event.target.c.id)
 				//Adobe Analytics video code
 				s.Media.stop(player.getVideoUrl(),currentTime);
 				s.Media.close(player.getVideoUrl());
